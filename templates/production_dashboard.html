@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Dashboard</title>
+<style>
+:root{--navy:#102a43;--gold:#f4c542;--bg:#eef2f6;--card:#fff;--muted:#64748b;--line:#dbe3ea;--green:#0f766e}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--navy)}
+header{background:var(--navy);color:#fff;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;gap:20px}header h1{margin:3px 0;font-size:25px}header small{opacity:.8}.actions{display:flex;gap:8px;align-items:center}.btn{border:0;border-radius:7px;padding:10px 14px;font-weight:700;cursor:pointer}.gold{background:var(--gold);color:var(--navy)}.white{background:#fff;color:var(--navy)}
+.wrap{max-width:1600px;margin:auto;padding:22px}.filters,.card,.kpi{background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(16,42,67,.08)}.filters{padding:18px;margin-bottom:18px}.filterrow{display:flex;flex-wrap:wrap;gap:14px;align-items:end}.filterrow label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:bold}select{min-width:120px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff}.run{background:var(--green);color:#fff;padding:11px 22px}.status{color:var(--muted);font-size:13px;margin-top:10px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:14px;margin-bottom:18px}.kpi{padding:18px}.kpi small{color:var(--muted);font-weight:bold}.kpi strong{display:block;font-size:25px;margin:10px 0}.kpi em{font-size:12px;color:var(--muted);font-style:normal}.accent{border-top:4px solid var(--gold)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}.card{padding:18px;overflow:auto}.card h2{font-size:18px;margin:0 0 14px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:var(--navy);color:#fff;text-align:left}th,td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}tr:hover{background:#f8fafc}.note{font-size:12px;color:var(--muted);margin-top:8px}@media(max-width:950px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}header{flex-direction:column;align-items:flex-start}}@media(max-width:500px){.kpis{grid-template-columns:1fr}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<header><div><small>SALESMANAGEMENT • MYSQL</small><h1>Production Dashboard</h1><small>Production, material consumption and transaction analysis</small></div><div class="actions"><span id="loggedUser"></span><button class="btn gold" onclick="location.href='/main-menu'">← MAIN DASHBOARD</button><button class="btn white" onclick="logoutUser()">LOGOUT</button></div></header>
+<div class="wrap">
+<section class="filters"><b>REPORT PARAMETERS</b><div class="filterrow" style="margin-top:12px">
+<label>From Year<select id="sy"></select></label><label>From Month<select id="sm"></select></label><label>To Year<select id="ey"></select></label><label>To Month<select id="em"></select></label><label>Division<select id="division"></select></label><label>Top Items<select id="top"><option>5</option><option selected>10</option><option>20</option><option>50</option></select></label><button class="btn run" onclick="loadDashboard()">RUN REPORT</button>
+</div><div id="status" class="status">Ready</div></section>
+<section class="kpis">
+<div class="kpi accent"><small>01 • PRODUCED UNITS</small><strong id="producedUnits">0</strong><em>Receipt quantity in units</em></div>
+<div class="kpi accent"><small>02 • PRODUCED KG</small><strong id="producedKgs">0</strong><em>Total production output weight</em></div>
+<div class="kpi accent"><small>03 • PRODUCTION COST</small><strong id="productionCost">0</strong><em>Receipt material cost</em></div>
+<div class="kpi accent"><small>04 • PRODUCED ITEMS</small><strong id="producedItems">0</strong><em>Distinct items received</em></div>
+<div class="kpi"><small>05 • MATERIAL ISSUED UNITS</small><strong id="consumedUnits">0</strong><em>Issue quantity in units</em></div>
+<div class="kpi"><small>06 • MATERIAL ISSUED KG</small><strong id="consumedKgs">0</strong><em>Total issued material weight</em></div>
+<div class="kpi"><small>07 • CONSUMPTION COST</small><strong id="consumptionCost">0</strong><em>Absolute issue material cost</em></div>
+<div class="kpi"><small>08 • OUTPUT / INPUT %</small><strong id="recoveryPct">0.00%</strong><em>Produced KG ÷ Issued KG × 100</em></div>
+</section>
+<div class="grid"><section class="card"><h2>Top Produced Items</h2><table id="topProduced"></table></section><section class="card"><h2>Top Consumed Materials</h2><table id="topConsumed"></table></section></div>
+<div class="grid"><section class="card"><h2>Production by Product Category</h2><table id="byCategory"></table></section><section class="card"><h2>Production by Division</h2><table id="byDivision"></table></section></div>
+<section class="card"><h2>Monthly Production Trend</h2><table id="monthly"></table></section>
+<section class="card" style="margin-top:18px"><h2>Issue and Receipt / Recovery by Item</h2><table id="issueReceipt"></table><div class="note">This report compares Issue and Receipt transactions for the same ORIGINALITEM. Where the same item does not have both transaction types, recovery is shown as N/A.</div></section>
+</div>
+<script>
+const $=id=>document.getElementById(id); const num=x=>Number(x||0); const fmt=x=>num(x).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function esc(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+(function init(){const d=new Date(),y=d.getFullYear(),m=d.getMonth()+1;for(let i=y-7;i<=y+1;i++){sy.add(new Option(i,i));ey.add(new Option(i,i))}for(let i=1;i<=12;i++){sm.add(new Option(i,i));em.add(new Option(i,i))}sy.value=y;ey.value=y;sm.value=m;em.value=m;loadSession()})();
+async function loadSession(){try{let r=await fetch('/api/session');if(!r.ok){location.href='/';return}let d=await r.json();$('loggedUser').textContent='User: '+d.username;await loadDivisions();loadDashboard()}catch(e){location.href='/'}}
+async function loadDivisions(){let r=await fetch('/api/production-divisions');let d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load divisions');division.innerHTML='';(d.divisions||[]).forEach(x=>division.add(new Option(x==='ALL'?'All Divisions':x,x)));if(!division.options.length)division.add(new Option('No Division',''));}
+async function loadDashboard(){status.textContent='Loading production report...';try{let q=new URLSearchParams({start_year:sy.value,start_month:sm.value,end_year:ey.value,end_month:em.value,division:division.value,top_n:top.value});let r=await fetch('/api/production-dashboard?'+q);let d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load report');render(d);status.textContent='Report loaded'}catch(e){status.textContent='Error';alert(e.message)}}
+function render(d){let k=d.kpi||{};producedUnits.textContent=fmt(k.produced_units);producedKgs.textContent=fmt(k.produced_kgs);productionCost.textContent=fmt(k.production_cost);producedItems.textContent=fmt(k.produced_items);consumedUnits.textContent=fmt(k.consumed_units);consumedKgs.textContent=fmt(k.consumed_kgs);consumptionCost.textContent=fmt(k.consumption_cost);recoveryPct.textContent=fmt(k.recovery_pct)+'%';standardTable('topProduced',d.top_produced);standardTable('topConsumed',d.top_consumed);standardTable('byCategory',d.by_category);standardTable('byDivision',d.by_division);monthlyTable(d.monthly);balanceTable(d.issue_receipt)}
+function standardTable(id,a){a=a||[];let s='<thead><tr><th>Item / Group</th><th>Units</th><th>KG</th><th>Cost</th></tr></thead><tbody>';if(!a.length)s+='<tr><td colspan="4">No data</td></tr>';a.forEach(r=>s+=`<tr><td>${esc(r.name)}</td><td>${fmt(r.units)}</td><td>${fmt(r.kgs)}</td><td>${fmt(r.cost)}</td></tr>`);$(id).innerHTML=s+'</tbody>'}
+function monthlyTable(a){a=a||[];let s='<thead><tr><th>Period</th><th>Produced Units</th><th>Produced KG</th><th>Issued KG</th><th>Output/Input %</th></tr></thead><tbody>';if(!a.length)s+='<tr><td colspan="5">No data</td></tr>';a.forEach(r=>{let p=num(r.consumed_kgs)?num(r.produced_kgs)/num(r.consumed_kgs)*100:0;s+=`<tr><td>${esc(r.year)}-${String(r.month).padStart(2,'0')}</td><td>${fmt(r.produced_units)}</td><td>${fmt(r.produced_kgs)}</td><td>${fmt(r.consumed_kgs)}</td><td>${fmt(p)}%</td></tr>`});monthly.innerHTML=s+'</tbody>'}
+function balanceTable(a){a=a||[];let s='<thead><tr><th>Original Item</th><th>Description</th><th>Receipt Units</th><th>Issue Units</th><th>Receipt KG</th><th>Issue KG</th><th>Net KG</th><th>Recovery %</th></tr></thead><tbody>';if(!a.length)s+='<tr><td colspan="8">No data</td></tr>';a.forEach(r=>s+=`<tr><td>${esc(r.item)}</td><td>${esc(r.description)}</td><td>${fmt(r.receipt_units)}</td><td>${fmt(r.issue_units)}</td><td>${fmt(r.receipt_kgs)}</td><td>${fmt(r.issue_kgs)}</td><td>${fmt(r.net_kgs)}</td><td>${r.recovery_pct==null?'N/A':fmt(r.recovery_pct)+'%'}</td></tr>`);issueReceipt.innerHTML=s+'</tbody>'}
+async function logoutUser(){await fetch('/api/logout',{method:'POST'});location.href='/'}
+</script></body></html>

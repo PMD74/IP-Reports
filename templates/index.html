@@ -1,0 +1,2760 @@
+top<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>SalesMaster KPI Dashboard</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+/* =====================================================
+   NEW SALES SUMMARY BUTTON
+===================================================== */
+
+.sales-summary-btn {
+    background: linear-gradient(135deg, #0f766e, #115e59);
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    border-radius: 7px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.sales-summary-btn:hover {
+    background: linear-gradient(135deg, #115e59, #134e4a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+
+/* =====================================================
+   REPORT BUTTON GROUP
+===================================================== */
+
+.report-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    width: 420px;
+    max-width: 90%;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 18px;
+}
+
+.modal-content select {
+    width: 100%;
+    margin-top: 6px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+
+/* =====================================================
+   COMPARISON HELP
+===================================================== */
+
+.comparison-help {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+}
+
+
+
+/* =====================================================
+   MAIN DASHBOARD BUTTON
+===================================================== */
+
+#mainMenuBtn {
+    margin-right: 8px;
+    border: 0;
+    border-radius: 6px;
+    padding: 9px 14px;
+    background: #f2c94c;
+    color: #102a43;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#mainMenuBtn:hover {
+    opacity: 0.9;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div id="loginScreen">
+
+    <div class="login-box">
+
+        <h2>SalesMaster KPI Dashboard</h2>
+
+        <p>Please login to continue</p>
+
+        <div id="loginError"></div>
+
+        <form
+            id="loginForm"
+            onsubmit="return doLogin(event);"
+        >
+
+            <label>
+                Username
+
+                <input
+                    type="text"
+                    id="loginUsername"
+                    autocomplete="username"
+                    required
+                >
+            </label>
+
+
+            <label>
+                Password
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    autocomplete="current-password"
+                    required
+                >
+            </label>
+
+
+            <button type="submit">
+                LOGIN
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PAGE
+===================================================== -->
+
+<div class="page">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+<div>
+
+<small>SALESMANAGEMENT • MYSQL</small>
+
+<h1>SalesMaster KPI Dashboard</h1>
+
+<p>Management sales analysis</p>
+
+</div>
+
+
+<div id="userInfo">
+
+<span id="loggedUser"></span>
+
+<button
+    id="mainMenuBtn"
+    type="button"
+    onclick="window.location.href='/'"
+>
+MAIN DASHBOARD
+</button>
+
+<button
+    id="logoutBtn"
+    type="button"
+    onclick="logoutUser()"
+>
+LOGOUT
+</button>
+
+</div>
+
+
+<span id="status">
+Ready
+</span>
+
+</header>
+
+
+<!-- =====================================================
+     REPORT PARAMETERS
+===================================================== -->
+
+<section class="filters">
+
+<b>REPORT PARAMETERS</b>
+
+
+<div class="filterrow">
+
+
+<label>
+
+From Year
+
+<select id="sy"></select>
+
+</label>
+
+
+<label>
+
+From Month
+
+<select id="sm"></select>
+
+</label>
+
+
+<label>
+
+To Year
+
+<select id="ey"></select>
+
+</label>
+
+
+<label>
+
+To Month
+
+<select id="em"></select>
+
+</label>
+
+
+<label>
+
+Customers
+
+<select id="top">
+
+<option value="10">
+10
+</option>
+
+<option value="20">
+20
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+Category
+
+<select id="cat">
+
+<option value="category">
+Category
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+Division
+
+<select id="division">
+</select>
+
+</label>
+
+
+<!-- =================================================
+     REPORT BUTTONS
+================================================= -->
+
+<div class="report-buttons">
+
+
+<button
+    type="button"
+    onclick="load()"
+>
+RUN REPORT
+</button>
+
+
+<button
+    type="button"
+    class="export-btn"
+    onclick="window.location.href='/sales-summary'"
+>
+    MTD / YTD CATEGORY SALES
+</button>
+
+
+<button
+    type="button"
+    class="export-btn export-all-btn"
+    onclick="openExportOptions()"
+>
+EXPORT TO EXCEL
+</button>
+
+
+</div>
+
+
+<span
+    id="exportStatus"
+    class="export-status"
+></span>
+
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     KPI SUMMARY
+===================================================== -->
+
+<section class="kpis">
+
+
+<div>
+
+<small>
+01 • SALES VALUE
+</small>
+
+<strong id="sales">
+0
+</strong>
+
+<em>
+Invoiced Amount
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+02 • QUANTITY
+</small>
+
+<strong id="units">
+0
+</strong>
+
+<em>
+Delivered Units
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+03 • WEIGHT
+</small>
+
+<strong id="kgs">
+0
+</strong>
+
+<em>
+Delivered KG
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+04 • AVG KG RATE
+</small>
+
+<strong id="rate">
+0
+</strong>
+
+<em>
+Sales / KG
+</em>
+
+</div>
+
+
+<div class="margin-box">
+
+<small>
+05 • MARGIN
+</small>
+
+<strong id="margin">
+0
+</strong>
+
+<span
+    class="margin-percent"
+    id="mp"
+>
+0.00%
+</span>
+
+<em>
+Margin % of Sales
+</em>
+
+</div>
+
+
+</section>
+
+
+<!-- =====================================================
+     ADDITIONAL KPI ROW
+===================================================== -->
+
+<section class="kpis secondary-kpis">
+
+
+<div>
+
+<small>
+06 • CUSTOMERS
+</small>
+
+<strong id="customersCount">
+0
+</strong>
+
+<em>
+Active Customers
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+07 • ITEMS
+</small>
+
+<strong id="itemsCount">
+0
+</strong>
+
+<em>
+Distinct Items
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+08 • INVOICES
+</small>
+
+<strong id="invoiceCount">
+0
+</strong>
+
+<em>
+Invoice Count
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+09 • AVG INVOICE
+</small>
+
+<strong id="avgInvoice">
+0
+</strong>
+
+<em>
+Sales / Invoice
+</em>
+
+</div>
+
+
+<div>
+
+<small>
+10 • BACKORDER
+</small>
+
+<strong id="backorder">
+0
+</strong>
+
+<em>
+Backorder Quantity
+</em>
+
+</div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     MONTHLY
+===================================================== -->
+
+<h2>
+Monthly Sales &amp; Cumulative
+</h2>
+
+
+<div class="card">
+
+<table id="monthly"></table>
+
+</div>
+
+
+<!-- =====================================================
+     STANDARD REPORTS
+===================================================== -->
+
+<div class="grid">
+
+
+<div class="card">
+
+<h3>
+Sales by Category
+</h3>
+
+<table id="category"></table>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Top Customers
+</h3>
+
+<table id="customers"></table>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Sales by Country
+</h3>
+
+<table id="countries"></table>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Sales by Sales Representative
+</h3>
+
+<table id="salesreps"></table>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     COMPARISON
+===================================================== -->
+
+<h2>
+Multi-Year / Period Comparison
+</h2>
+
+
+<section class="filters comparison-box">
+
+
+<div class="filterrow">
+
+
+<label>
+
+Years
+
+<select
+    id="comparisonYears"
+    multiple
+    size="5"
+>
+</select>
+
+</label>
+
+
+<label>
+
+Dimension
+
+<select id="comparisonDimension">
+
+<option value="category">
+Category
+</option>
+
+<option value="customer">
+Customer
+</option>
+
+<option value="country">
+Country
+</option>
+
+<option value="item">
+Item Code
+</option>
+
+<option value="salesrep">
+Sales Representative
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+Measure
+
+<select id="comparisonMeasure">
+
+<option value="sales">
+Sales Value
+</option>
+
+<option value="units">
+Sales Quantity
+</option>
+
+<option value="kgs">
+Sales KG
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+Period
+
+<select id="comparisonPeriod">
+
+<option value="no">
+Year Comparison
+</option>
+
+<option value="yes">
+Period / Month Comparison
+</option>
+
+</select>
+
+</label>
+
+
+<button
+    type="button"
+    onclick="runComparison()"
+>
+RUN COMPARISON
+</button>
+
+
+<button
+    type="button"
+    class="export-btn"
+    onclick="exportComparison()"
+>
+EXPORT COMPARISON
+</button>
+
+
+</div>
+
+
+<div
+    class="comparison-help"
+>
+Hold <b>Ctrl</b> and select multiple years.
+</div>
+
+
+</section>
+
+
+<div class="card">
+
+<table id="comparisonTable"></table>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     EXCEL EXPORT OPTIONS MODAL
+===================================================== -->
+
+<div
+    id="exportModal"
+    class="modal"
+>
+
+
+<div class="modal-content">
+
+
+<h2>
+Excel Export Options
+</h2>
+
+
+<label>
+
+Customers
+
+<select id="exportCustomerScope">
+
+<option value="top">
+Top Customers Only
+</option>
+
+<option value="all">
+All Customers
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+Categories
+
+<select id="exportCategoryScope">
+
+<option value="top">
+Categories in KPI
+</option>
+
+<option value="all">
+All Categories
+</option>
+
+</select>
+
+</label>
+
+
+<label>
+
+Items
+
+<select id="exportItemScope">
+
+<option value="kpi">
+KPI Data - Top 5 Items per Category
+</option>
+
+<option value="all">
+All Items by All Categories
+</option>
+
+</select>
+
+</label>
+
+
+<div class="modal-buttons">
+
+<button
+    type="button"
+    onclick="exportExcel()"
+>
+EXPORT
+</button>
+
+
+<button
+    type="button"
+    onclick="closeExportOptions()"
+>
+CANCEL
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+
+var lastReportData = null;
+
+var lastComparisonData = null;
+
+
+/* =====================================================
+   INITIALISE
+===================================================== */
+
+(function(){
+
+    /*
+       Get the current browser year and month.
+
+       Example:
+       August 2026
+       y = 2026
+       m = 8
+    */
+
+    var y =
+        new Date().getFullYear();
+
+    var m =
+        new Date().getMonth() + 1;
+
+
+    var i;
+
+
+    /*
+       Populate Year dropdowns.
+    */
+
+    for(
+        i = y - 7;
+        i <= y + 1;
+        i++
+    ){
+
+        sy.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+        ey.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+        comparisonYears.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+    }
+
+
+    /*
+       Populate Month dropdowns.
+    */
+
+    for(
+        i = 1;
+        i <= 12;
+        i++
+    ){
+
+        sm.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+        em.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+    }
+
+
+    /*
+       =================================================
+       DEFAULT REPORT FILTERS
+       =================================================
+
+       BOTH From and To are now set to the
+       CURRENT YEAR and CURRENT MONTH.
+
+       Example:
+       Current date = August 2026
+
+       From Year  = 2026
+       From Month = 8
+       To Year    = 2026
+       To Month   = 8
+
+       Therefore the dashboard initially loads
+       only the current month.
+    */
+
+    sy.value = y;
+
+    ey.value = y;
+
+    sm.value = m;
+
+    em.value = m;
+
+
+    /*
+       Default comparison year
+       remains current year.
+    */
+
+    comparisonYears.value = y;
+
+
+    /*
+       Start application after page loads.
+    */
+
+    window.onload =
+        initApplication;
+
+})();
+
+
+/* =====================================================
+   OPEN NEW SALES SUMMARY REPORT
+===================================================== */
+
+function openSalesSummary(){
+
+    /*
+       Open the new Category Sales MTD/YTD report
+       in a separate browser tab.
+
+       The Flask/Python application should have:
+
+       @app.route("/sales_summary")
+       def sales_summary():
+           return render_template("sales_summary.html")
+    */
+
+
+    var selectedDivision =
+        document.getElementById(
+            "division"
+        ).value;
+
+
+    var url =
+        "/sales_summary?division=" +
+        encodeURIComponent(
+            selectedDivision
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+/* =====================================================
+   INITIALISE APPLICATION
+===================================================== */
+
+function initApplication(){
+
+    var x =
+        new XMLHttpRequest();
+
+    x.open(
+        "GET",
+        "/api/session",
+        true
+    );
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            if(
+                x.status == 200
+            ){
+
+                try {
+
+                    var d =
+                        JSON.parse(
+                            x.responseText
+                        );
+
+                    if(
+                        d.authenticated
+                    ){
+
+                        /*
+                           IMPORTANT ROUTING RULE:
+
+                           index.html is used for two purposes:
+                           1. Login page at /
+                           2. Full Sales KPI dashboard at /sales-dashboard
+
+                           If this page is opened from the root URL and the
+                           user is already authenticated, let Flask route the
+                           user through dashboard_placeholder.html.
+
+                           If this page is opened at /sales-dashboard, show
+                           the Sales KPI dashboard directly.
+                        */
+
+                        if (
+                            window.location.pathname === "/sales-dashboard"
+                        ){
+
+                            showDashboard(
+                                d.username,
+                                d.divisions,
+                                d.default_division
+                            );
+
+                        }
+                        else {
+
+                            window.location.href = "/";
+
+                        }
+
+                    }
+                    else {
+
+                        showLogin();
+
+                    }
+
+                }
+                catch(e){
+
+                    showLogin();
+
+                }
+
+            }
+            else {
+
+                showLogin();
+
+            }
+
+        };
+
+    x.send();
+
+}
+
+
+/* =====================================================
+   SHOW LOGIN
+===================================================== */
+
+function showLogin(){
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "flex";
+
+    document.querySelector(
+        ".page"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "userInfo"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "loginUsername"
+    ).focus();
+
+}
+
+
+/* =====================================================
+   SHOW DASHBOARD
+===================================================== */
+
+function showDashboard(
+    username,
+    divisions,
+    defaultDivision
+){
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "none";
+
+    document.querySelector(
+        ".page"
+    ).style.display =
+        "block";
+
+    document.getElementById(
+        "userInfo"
+    ).style.display =
+        "flex";
+
+    document.getElementById(
+        "loggedUser"
+    ).innerHTML =
+        "User: " +
+        esc(username);
+
+    setDivisions(
+        divisions,
+        defaultDivision
+    );
+
+    load();
+
+}
+
+
+/* =====================================================
+   DIVISIONS
+===================================================== */
+
+function setDivisions(
+    divisions,
+    defaultDivision
+){
+
+    var select =
+        document.getElementById(
+            "division"
+        );
+
+    select.innerHTML = "";
+
+
+    for(
+        var i = 0;
+        i < divisions.length;
+        i++
+    ){
+
+        select.add(
+            new Option(
+                divisions[i] === "ALL"
+                    ? "All Divisions"
+                    : divisions[i],
+                divisions[i]
+            )
+        );
+
+    }
+
+
+    if(
+        divisions.length > 0
+    ){
+
+        if(
+            defaultDivision &&
+            divisions.indexOf(defaultDivision) >= 0
+        ){
+
+            select.value =
+                defaultDivision;
+
+        }
+        else {
+
+            select.value =
+                divisions[0];
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+function doLogin(event){
+
+    event.preventDefault();
+
+
+    var error =
+        document.getElementById(
+            "loginError"
+        );
+
+    error.style.display =
+        "none";
+
+
+    var username =
+        document.getElementById(
+            "loginUsername"
+        ).value.trim();
+
+
+    var password =
+        document.getElementById(
+            "loginPassword"
+        ).value;
+
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "POST",
+        "/api/login",
+        true
+    );
+
+
+    x.setRequestHeader(
+        "Content-Type",
+        "application/json"
+    );
+
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            var result = {};
+
+
+            try {
+
+                result =
+                    JSON.parse(
+                        x.responseText
+                    );
+
+            }
+            catch(e){
+
+                result.error =
+                    "Login failed.";
+
+            }
+
+
+            if(
+                x.status == 200 &&
+                result.success
+            ){
+
+                document.getElementById(
+                    "loginPassword"
+                ).value = "";
+
+
+                /*
+                   LOGIN ALWAYS RETURNS TO THE SERVER-CONTROLLED LANDING
+                   PAGE. Flask will then load dashboard_placeholder.html
+                   and use the user's module/division permissions to decide
+                   which dashboard route is available.
+
+                   Do NOT call showDashboard() here. That would bypass the
+                   dashboard routing layer.
+                */
+                window.location.href = "/";
+
+            }
+            else {
+
+                error.innerHTML =
+                    esc(
+                        result.error ||
+                        "Invalid username or password."
+                    );
+
+                error.style.display =
+                    "block";
+
+            }
+
+        };
+
+
+    x.send(
+        JSON.stringify({
+            username:
+                username,
+            password:
+                password
+        })
+    );
+
+
+    return false;
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logoutUser(){
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "POST",
+        "/api/logout",
+        true
+    );
+
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            if(
+                x.status == 200
+            ){
+
+                window.location.href = "/";
+
+            }
+            else {
+
+                alert(
+                    "Unable to logout."
+                );
+
+            }
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* =====================================================
+   NUMBER
+===================================================== */
+
+function n(x){
+
+    x =
+        parseFloat(x);
+
+    return isNaN(x)
+        ? 0
+        : x;
+
+}
+
+
+/* =====================================================
+   FORMAT
+===================================================== */
+
+function f(x){
+
+    return n(x).toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPE
+===================================================== */
+
+function esc(x){
+
+    return String(
+        x == null
+            ? ""
+            : x
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    );
+
+}
+
+
+/* =====================================================
+   LOAD
+===================================================== */
+
+function load(){
+
+    status.innerHTML =
+        "Loading...";
+
+
+    var q =
+        "?start_year=" +
+        sy.value +
+
+        "&start_month=" +
+        sm.value +
+
+        "&end_year=" +
+        ey.value +
+
+        "&end_month=" +
+        em.value +
+
+        "&top_n=" +
+        top.value +
+
+        "&category_field=" +
+        cat.value +
+
+        "&division=" +
+        encodeURIComponent(
+            division.value
+        );
+
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "GET",
+        "/api/dashboard" + q,
+        true
+    );
+
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            if(
+                x.status == 200
+            ){
+
+                var reportData =
+                    JSON.parse(
+                        x.responseText
+                    );
+
+                lastReportData =
+                    reportData;
+
+
+                render(
+                    reportData
+                );
+
+
+                status.innerHTML =
+                    "Report loaded";
+
+            }
+            else {
+
+                var z;
+
+                try {
+
+                    z =
+                        JSON.parse(
+                            x.responseText
+                        ).error;
+
+                }
+                catch(e){
+
+                    z =
+                        x.statusText;
+
+                }
+
+
+                if(
+                    x.status == 401
+                ){
+
+                    showLogin();
+
+                }
+
+
+                status.innerHTML =
+                    "Error";
+
+
+                alert(z);
+
+            }
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function render(d){
+
+    sales.innerHTML =
+        f(d.kpi.sales);
+
+    units.innerHTML =
+        f(d.kpi.units);
+
+    kgs.innerHTML =
+        f(d.kpi.kgs);
+
+    rate.innerHTML =
+        f(d.kpi.rate);
+
+    margin.innerHTML =
+        f(d.kpi.margin);
+
+    mp.innerHTML =
+        f(d.kpi.margin_pct) +
+        "%";
+
+
+    customersCount.innerHTML =
+        f(d.kpi.customers);
+
+    itemsCount.innerHTML =
+        f(d.kpi.items);
+
+    invoiceCount.innerHTML =
+        f(d.kpi.invoices);
+
+    avgInvoice.innerHTML =
+        f(d.kpi.avg_invoice);
+
+    backorder.innerHTML =
+        f(d.kpi.backorder);
+
+
+    table(
+        "monthly",
+        d.monthly,
+        true,
+        d.monthly_total
+    );
+
+
+    table(
+        "category",
+        d.category,
+        false,
+        d.category_total
+    );
+
+
+    table(
+        "customers",
+        d.customers,
+        false,
+        d.customers_total
+    );
+
+
+    table(
+        "countries",
+        d.countries,
+        false,
+        d.countries_total
+    );
+
+
+    table(
+        "salesreps",
+        d.salesreps,
+        false,
+        d.salesreps_total
+    );
+
+
+    itemTable(
+        d.top5_items
+    );
+
+}
+
+
+/* =====================================================
+   STANDARD TABLE
+===================================================== */
+
+function table(
+    id,
+    a,
+    monthly,
+    total
+){
+
+    var h;
+
+
+    if(monthly){
+
+        h = [
+
+            "Month",
+
+            "Sales Value",
+
+            "Cumulative Sales",
+
+            "Units",
+
+            "KG",
+
+            "Avg KG Rate",
+
+            "Margin",
+
+            "Margin %"
+
+        ];
+
+    }
+    else {
+
+        h = [
+
+            "Name",
+
+            "Sales Value",
+
+            "Units",
+
+            "KG",
+
+            "Avg KG Rate",
+
+            "Margin",
+
+            "Margin %"
+
+        ];
+
+    }
+
+
+    var s =
+        "<thead><tr>";
+
+
+    for(
+        var i = 0;
+        i < h.length;
+        i++
+    ){
+
+        s +=
+            "<th>" +
+            h[i] +
+            "</th>";
+
+    }
+
+
+    s +=
+        "</tr></thead><tbody>";
+
+
+    for(
+        var j = 0;
+        j < a.length;
+        j++
+    ){
+
+        var r = a[j];
+
+
+        s +=
+            "<tr>";
+
+
+        if(monthly){
+
+            s +=
+                "<td>" +
+                esc(r.period) +
+                "</td>";
+
+            s +=
+                "<td>" +
+                f(r.sales) +
+                "</td>";
+
+            s +=
+                "<td>" +
+                f(r.cumulative) +
+                "</td>";
+
+        }
+        else {
+
+            s +=
+                "<td>" +
+                esc(r.label) +
+                "</td>";
+
+            s +=
+                "<td>" +
+                f(r.sales) +
+                "</td>";
+
+        }
+
+
+        s +=
+            "<td>" +
+            f(r.units) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(r.kgs) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(r.rate) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(r.margin) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(r.margin_pct) +
+            "%" +
+            "</td>";
+
+
+        s +=
+            "</tr>";
+
+    }
+
+
+    if(total){
+
+        s +=
+            "<tr class='total-row'>";
+
+
+        if(monthly){
+
+            s +=
+                "<td><strong>TOTAL</strong></td>";
+
+            s +=
+                "<td>" +
+                f(total.sales) +
+                "</td>";
+
+            s +=
+                "<td>" +
+                f(total.cumulative) +
+                "</td>";
+
+        }
+        else {
+
+            s +=
+                "<td><strong>TOTAL</strong></td>";
+
+            s +=
+                "<td>" +
+                f(total.sales) +
+                "</td>";
+
+        }
+
+
+        s +=
+            "<td>" +
+            f(total.units) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(total.kgs) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(total.rate) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(total.margin) +
+            "</td>";
+
+
+        s +=
+            "<td>" +
+            f(total.margin_pct) +
+            "%" +
+            "</td>";
+
+
+        s +=
+            "</tr>";
+
+    }
+
+
+    s +=
+        "</tbody>";
+
+
+    document.getElementById(
+        id
+    ).innerHTML =
+        s;
+
+}
+
+
+/* =====================================================
+   TOP ITEM TABLE
+===================================================== */
+
+function itemTable(
+    a
+){
+
+    var s =
+        "<thead><tr>" +
+
+        "<th>Category</th>" +
+
+        "<th>Rank</th>" +
+
+        "<th>Item Code</th>" +
+
+        "<th>Item Description</th>" +
+
+        "<th>Sales Value</th>" +
+
+        "<th>Quantity</th>" +
+
+        "<th>Quantity KG</th>" +
+
+        "<th>Margin</th>" +
+
+        "<th>Margin %</th>" +
+
+        "</tr></thead><tbody>";
+
+
+    for(
+        var i = 0;
+        i < a.length;
+        i++
+    ){
+
+        var r = a[i];
+
+
+        s +=
+            "<tr>" +
+
+            "<td>" +
+            esc(r.category) +
+            "</td>" +
+
+            "<td>" +
+            f(r.rank) +
+            "</td>" +
+
+            "<td>" +
+            esc(r.itemcode) +
+            "</td>" +
+
+            "<td>" +
+            esc(r.description) +
+            "</td>" +
+
+            "<td>" +
+            f(r.sales) +
+            "</td>" +
+
+            "<td>" +
+            f(r.units) +
+            "</td>" +
+
+            "<td>" +
+            f(r.kgs) +
+            "</td>" +
+
+            "<td>" +
+            f(r.margin) +
+            "</td>" +
+
+            "<td>" +
+            f(r.margin_pct) +
+            "%" +
+
+            "</td>" +
+
+            "</tr>";
+
+    }
+
+
+    s +=
+        "</tbody>";
+
+
+    document.getElementById(
+        "top5items"
+    ).innerHTML =
+        s;
+
+}
+
+
+/* =====================================================
+   EXCEL OPTIONS
+===================================================== */
+
+function openExportOptions(){
+
+    if(!lastReportData){
+
+        alert(
+            "Please run the report first."
+        );
+
+        return;
+    }
+
+
+    document.getElementById(
+        "exportModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeExportOptions(){
+
+    document.getElementById(
+        "exportModal"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   EXCEL EXPORT
+===================================================== */
+
+function exportExcel(){
+
+    if(!lastReportData){
+
+        alert(
+            "Please run the report first."
+        );
+
+        return;
+    }
+
+
+    var exportStatus =
+        document.getElementById(
+            "exportStatus"
+        );
+
+
+    exportStatus.innerHTML =
+        "Preparing Excel...";
+
+
+    var payload = {
+
+        sheet:
+            "all",
+
+        data:
+            lastReportData,
+
+        division:
+            division.value,
+
+        customer_scope:
+            document.getElementById(
+                "exportCustomerScope"
+            ).value,
+
+        category_scope:
+            document.getElementById(
+                "exportCategoryScope"
+            ).value,
+
+        item_scope:
+            document.getElementById(
+                "exportItemScope"
+            ).value,
+
+        period:
+            sy.value +
+            "-" +
+            sm.value +
+            " to " +
+            ey.value +
+            "-" +
+            em.value
+    };
+
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "POST",
+        "/api/export/excel",
+        true
+    );
+
+
+    x.setRequestHeader(
+        "Content-Type",
+        "application/json"
+    );
+
+
+    x.responseType =
+        "blob";
+
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            if(
+                x.status == 200
+            ){
+
+                var blob =
+                    x.response;
+
+
+                var filename =
+                    "SalesMaster_KPI_Report.xlsx";
+
+
+                var url =
+                    window.URL.createObjectURL(
+                        blob
+                    );
+
+
+                var a =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                a.style.display =
+                    "none";
+
+                a.href =
+                    url;
+
+                a.download =
+                    filename;
+
+
+                document.body.appendChild(
+                    a
+                );
+
+
+                a.click();
+
+
+                setTimeout(
+                    function(){
+
+                        document.body.removeChild(
+                            a
+                        );
+
+                        window.URL.revokeObjectURL(
+                            url
+                        );
+
+                    },
+                    100
+                );
+
+
+                exportStatus.innerHTML =
+                    "Excel exported";
+
+
+                closeExportOptions();
+
+            }
+            else {
+
+                exportStatus.innerHTML =
+                    "Export error";
+
+                alert(
+                    "Unable to export Excel."
+                );
+
+            }
+
+        };
+
+
+    x.send(
+        JSON.stringify(
+            payload
+        )
+    );
+
+}
+
+
+/* =====================================================
+   COMPARISON
+===================================================== */
+
+function getSelectedYears(){
+
+    var select =
+        document.getElementById(
+            "comparisonYears"
+        );
+
+    var result = [];
+
+
+    for(
+        var i = 0;
+        i < select.options.length;
+        i++
+    ){
+
+        if(
+            select.options[i].selected
+        ){
+
+            result.push(
+                select.options[i].value
+            );
+
+        }
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   RUN COMPARISON
+===================================================== */
+
+function runComparison(){
+
+    var years =
+        getSelectedYears();
+
+
+    if(
+        years.length == 0
+    ){
+
+        alert(
+            "Please select at least one year."
+        );
+
+        return;
+    }
+
+
+    status.innerHTML =
+        "Loading comparison...";
+
+
+    var q =
+        "?years=" +
+        encodeURIComponent(
+            years.join(",")
+        ) +
+
+        "&dimension=" +
+        encodeURIComponent(
+            document.getElementById(
+                "comparisonDimension"
+            ).value
+        ) +
+
+        "&measure=" +
+        encodeURIComponent(
+            document.getElementById(
+                "comparisonMeasure"
+            ).value
+        ) +
+
+        "&period=" +
+        encodeURIComponent(
+            document.getElementById(
+                "comparisonPeriod"
+            ).value
+        ) +
+
+        "&division=" +
+        encodeURIComponent(
+            division.value
+        );
+
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "GET",
+        "/api/comparison" + q,
+        true
+    );
+
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            if(
+                x.status == 200
+            ){
+
+                var d =
+                    JSON.parse(
+                        x.responseText
+                    );
+
+
+                lastComparisonData =
+                    d;
+
+
+                renderComparison(
+                    d
+                );
+
+
+                status.innerHTML =
+                    "Comparison loaded";
+
+            }
+            else {
+
+                var message =
+                    "Unable to load comparison.";
+
+                try {
+
+                    message =
+                        JSON.parse(
+                            x.responseText
+                        ).error;
+
+                }
+                catch(e){}
+
+
+                alert(message);
+
+                status.innerHTML =
+                    "Error";
+
+            }
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* =====================================================
+   RENDER COMPARISON
+===================================================== */
+
+function renderComparison(d){
+
+    var headers = [];
+
+
+    if(
+        d.period
+    ){
+
+        headers.push(
+            "Period"
+        );
+
+    }
+    else {
+
+        headers.push(
+            "Year"
+        );
+
+    }
+
+
+    for(
+        var i = 0;
+        i < d.labels.length;
+        i++
+    ){
+
+        headers.push(
+            d.labels[i]
+        );
+
+    }
+
+
+    var html =
+        "<thead><tr>";
+
+
+    for(
+        var h = 0;
+        h < headers.length;
+        h++
+    ){
+
+        html +=
+            "<th>" +
+            esc(headers[h]) +
+            "</th>";
+
+    }
+
+
+    html +=
+        "</tr></thead><tbody>";
+
+
+    for(
+        var r = 0;
+        r < d.rows.length;
+        r++
+    ){
+
+        var row =
+            d.rows[r];
+
+
+        html +=
+            "<tr>";
+
+
+        if(
+            d.period
+        ){
+
+            html +=
+                "<td>" +
+                esc(row.period) +
+                "</td>";
+
+        }
+        else {
+
+            html +=
+                "<td>" +
+                esc(row.year) +
+                "</td>";
+
+        }
+
+
+        for(
+            var c = 0;
+            c < d.labels.length;
+            c++
+        ){
+
+            var label =
+                d.labels[c];
+
+
+            html +=
+                "<td>" +
+                f(row[label]) +
+                "</td>";
+
+        }
+
+
+        html +=
+            "</tr>";
+
+    }
+
+
+    html +=
+        "</tbody>";
+
+
+    document.getElementById(
+        "comparisonTable"
+    ).innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   EXPORT COMPARISON
+===================================================== */
+
+function exportComparison(){
+
+    if(
+        !lastComparisonData
+    ){
+
+        alert(
+            "Please run a comparison first."
+        );
+
+        return;
+    }
+
+
+    var payload = {
+
+        sheet:
+            "all",
+
+        data:
+            lastReportData,
+
+        comparison:
+            lastComparisonData,
+
+        division:
+            division.value,
+
+        customer_scope:
+            "all",
+
+        category_scope:
+            "all",
+
+        item_scope:
+            "all",
+
+        period:
+            "Comparison"
+    };
+
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "POST",
+        "/api/export/excel",
+        true
+    );
+
+
+    x.setRequestHeader(
+        "Content-Type",
+        "application/json"
+    );
+
+
+    x.responseType =
+        "blob";
+
+
+    x.onreadystatechange =
+        function(){
+
+            if(
+                x.readyState != 4
+            )
+                return;
+
+
+            if(
+                x.status == 200
+            ){
+
+                var blob =
+                    x.response;
+
+
+                var url =
+                    window.URL.createObjectURL(
+                        blob
+                    );
+
+
+                var a =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                a.href =
+                    url;
+
+                a.download =
+                    "SalesMaster_Comparison.xlsx";
+
+
+                document.body.appendChild(
+                    a
+                );
+
+                a.click();
+
+
+                setTimeout(
+                    function(){
+
+                        document.body.removeChild(
+                            a
+                        );
+
+                        window.URL.revokeObjectURL(
+                            url
+                        );
+
+                    },
+                    100
+                );
+
+            }
+            else {
+
+                alert(
+                    "Unable to export comparison."
+                );
+
+            }
+
+        };
+
+
+    x.send(
+        JSON.stringify(
+            payload
+        )
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

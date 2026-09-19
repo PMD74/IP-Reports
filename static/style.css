@@ -1,0 +1,842 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+
+    background: #edf1f5;
+
+    color: #18233b;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    min-width: 1000px;
+}
+
+
+.page {
+    max-width: 1500px;
+
+    margin: auto;
+
+    padding: 22px;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+
+    background: #101b36;
+
+    color: white;
+
+    padding: 23px 28px;
+
+    border-radius: 7px;
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+}
+
+
+header small {
+
+    color: #e3c33b;
+
+    letter-spacing: 2px;
+
+    font-weight: bold;
+
+}
+
+
+h1 {
+
+    margin: 6px 0;
+
+    font-size: 28px;
+
+}
+
+
+header p {
+
+    margin: 0;
+
+    color: #cbd3e0;
+
+}
+
+
+#status {
+
+    border: 1px solid #66738f;
+
+    padding: 8px 13px;
+
+    border-radius: 4px;
+
+    color: #e3c33b;
+
+    font-size: 12px;
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+#loginScreen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #eef1f5;
+
+    z-index: 9999;
+
+}
+
+
+.login-box {
+
+    width: 360px;
+
+    max-width:
+        calc(100% - 40px);
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 12px 35px
+        rgba(0,0,0,0.18);
+
+}
+
+
+.login-box h2 {
+
+    margin:
+        0 0 8px 0;
+
+}
+
+
+.login-box p {
+
+    margin:
+        0 0 22px 0;
+
+    color: #666;
+
+}
+
+
+.login-box label {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    margin-bottom: 14px;
+
+    font-weight: 600;
+
+}
+
+
+.login-box input {
+
+    box-sizing:
+        border-box;
+
+    width: 100%;
+
+    min-height: 40px;
+
+    padding:
+        8px 10px;
+
+    border:
+        1px solid #bbb;
+
+    border-radius: 5px;
+
+    font-size: 15px;
+
+}
+
+
+.login-box button {
+
+    width: 100%;
+
+    min-height: 42px;
+
+    border: 0;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+}
+
+
+#loginError {
+
+    display: none;
+
+    margin-bottom: 14px;
+
+    padding: 10px;
+
+    border-radius: 5px;
+
+    background: #ffe4e4;
+
+    color: #a00000;
+
+    font-weight: 600;
+
+}
+
+
+#userInfo {
+
+    display: none;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+#logoutBtn {
+
+    cursor: pointer;
+
+    padding: 6px 12px;
+
+    border-radius: 5px;
+
+    font-weight: bold;
+
+}
+
+
+/* =====================================================
+   FILTERS
+===================================================== */
+
+.filters {
+
+    background: #fff;
+
+    border:
+        1px solid #d5dce6;
+
+    border-radius: 6px;
+
+    box-shadow:
+        0 2px 7px #0000000c;
+
+    margin-top: 18px;
+
+    padding:
+        16px 20px;
+
+}
+
+
+.filterrow {
+
+    display: flex;
+
+    gap: 12px;
+
+    align-items: end;
+
+    margin-top: 12px;
+
+    flex-wrap: wrap;
+
+}
+
+
+label {
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    color: #687487;
+
+}
+
+
+select {
+
+    display: block;
+
+    margin-top: 5px;
+
+    height: 35px;
+
+    min-width: 115px;
+
+    border:
+        1px solid #bdc6d3;
+
+    border-radius: 4px;
+
+    padding:
+        0 8px;
+
+    background: white;
+
+}
+
+
+button {
+
+    height: 35px;
+
+    background: #e1bd32;
+
+    border: 0;
+
+    border-radius: 4px;
+
+    padding:
+        0 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+button:hover {
+
+    opacity: 0.90;
+
+}
+
+
+/* =====================================================
+   KPI
+===================================================== */
+
+.kpis {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 12px;
+
+    margin-top: 18px;
+
+}
+
+
+.kpis > div {
+
+    background: white;
+
+    border:
+        1px solid #d5dce6;
+
+    border-top:
+        4px solid #182f60;
+
+    border-radius: 6px;
+
+    padding: 15px;
+
+    min-height: 115px;
+
+}
+
+
+.kpis .margin-box {
+
+    border-top-color:
+        #d2b333;
+
+    background:
+        #fff8d8;
+
+}
+
+
+.kpis small {
+
+    display: block;
+
+    color: #697589;
+
+    font-size: 10px;
+
+    font-weight: bold;
+
+}
+
+
+.kpis strong {
+
+    display: block;
+
+    font-size: 24px;
+
+    margin:
+        13px 0 5px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+}
+
+
+.kpis em {
+
+    font-style: normal;
+
+    color: #7d8795;
+
+    font-size: 11px;
+
+}
+
+
+.margin-percent {
+
+    font-size: 22px;
+
+    font-weight: 900;
+
+    display: block;
+
+}
+
+
+/* =====================================================
+   HEADINGS
+===================================================== */
+
+h2 {
+
+    font-size: 14px;
+
+    margin:
+        22px 0 10px;
+
+    color: #182f60;
+
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card {
+
+    background: white;
+
+    border:
+        1px solid #d5dce6;
+
+    border-radius: 6px;
+
+    box-shadow:
+        0 2px 7px #0000000c;
+
+    overflow-x: auto;
+
+}
+
+
+.card h3 {
+
+    margin: 0;
+
+    padding:
+        13px 15px;
+
+    background:
+        #f4f6f9;
+
+    border-bottom:
+        1px solid #d5dce6;
+
+    font-size: 13px;
+
+    color: #182f60;
+
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+table {
+
+    width: 100%;
+
+    border-collapse:
+        collapse;
+
+}
+
+
+th {
+
+    background:
+        #182f60;
+
+    color: white;
+
+    text-align: left;
+
+    padding: 9px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+}
+
+
+td {
+
+    padding:
+        8px 9px;
+
+    border-bottom:
+        1px solid #e5e9ef;
+
+    font-size: 11px;
+
+    text-align: right;
+
+    white-space: nowrap;
+
+}
+
+
+td:first-child,
+th:first-child {
+
+    text-align: left;
+
+}
+
+
+tr:nth-child(even) td {
+
+    background:
+        #fafbfd;
+
+}
+
+
+tr.total-row td {
+
+    font-weight: 900;
+
+    border-top:
+        3px solid #222;
+
+    background:
+        #fff7d6;
+
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 15px;
+
+    margin-top: 15px;
+
+}
+
+
+/* =====================================================
+   EXPORT
+===================================================== */
+
+.export-btn {
+
+    background:
+        #1f4e78;
+
+    color: white;
+
+    border:
+        1px solid #1f4e78;
+
+}
+
+
+.export-all-btn {
+
+    background:
+        #217346;
+
+    border-color:
+        #217346;
+
+}
+
+
+.export-status {
+
+    margin-left: 5px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+/* =====================================================
+   COMPARISON
+===================================================== */
+
+.comparison-box {
+
+    margin-top: 12px;
+
+}
+
+
+.comparison-box select[multiple] {
+
+    height: 110px;
+
+    min-width: 130px;
+
+}
+
+
+.comparison-help {
+
+    margin-top: 10px;
+
+    font-size: 11px;
+
+    color: #687487;
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 10000;
+
+    background:
+        rgba(0,0,0,0.45);
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.modal-content {
+
+    width: 450px;
+
+    max-width:
+        calc(100% - 40px);
+
+    background: white;
+
+    border-radius: 8px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,0.25);
+
+}
+
+
+.modal-content h2 {
+
+    margin-top: 0;
+
+}
+
+
+.modal-content label {
+
+    display: block;
+
+    margin:
+        15px 0;
+
+}
+
+
+.modal-content select {
+
+    width: 100%;
+
+}
+
+
+.modal-buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+    justify-content: flex-end;
+
+    margin-top: 20px;
+
+}
+
+
+.modal-buttons button:first-child {
+
+    background:
+        #217346;
+
+    color: white;
+
+}
+
+
+.modal-buttons button:last-child {
+
+    background:
+        #777;
+
+    color: white;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:1100px) {
+
+    .kpis {
+
+        grid-template-columns:
+            repeat(3,1fr);
+
+    }
+
+    .grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+@media(max-width:700px) {
+
+    .kpis {
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+
+@media(max-width:600px) {
+
+    .kpis {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+    .filterrow {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+
+    }
+
+    .filterrow label {
+
+        width: 100%;
+
+    }
+
+}

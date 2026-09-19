@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {{ dashboard_name or 'Main Dashboard' }}
+    </title>
+
+
+    <style>
+
+        /* =====================================================
+           GLOBAL SETTINGS
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+            padding: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #eef2f6;
+
+            color: #102a43;
+
+        }
+
+
+        /* =====================================================
+           TOP HEADER
+        ===================================================== */
+
+        .bar {
+
+            min-height: 70px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 14px 35px;
+
+            background: #102a43;
+
+            color: white;
+
+            box-shadow:
+                0 3px 10px
+                rgba(0, 0, 0, 0.15);
+
+        }
+
+
+        .brand-section {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 4px;
+
+        }
+
+
+        .brand {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            color: white;
+
+        }
+
+
+        .user {
+
+            font-size: 13px;
+
+            color: #dbe7f0;
+
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .btn {
+
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 10px 18px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            transition: all 0.2s ease;
+
+        }
+
+
+        .btn:hover {
+
+            transform:
+                translateY(-1px);
+
+            opacity: 0.90;
+
+        }
+
+
+        .logout {
+
+            background: white;
+
+            color: #102a43;
+
+        }
+
+
+        /* =====================================================
+           MAIN WRAPPER
+        ===================================================== */
+
+        .wrap {
+
+            max-width: 1200px;
+
+            margin: 40px auto;
+
+            padding: 0 20px;
+
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT BOX
+        ===================================================== */
+
+        .box {
+
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(16, 42, 67, 0.12);
+
+        }
+
+
+        /* =====================================================
+           HEADINGS
+        ===================================================== */
+
+        h1 {
+
+            margin-top: 0;
+
+            margin-bottom: 12px;
+
+            color: #102a43;
+
+            font-size: 30px;
+
+        }
+
+
+        /* =====================================================
+           DESCRIPTION TEXT
+        ===================================================== */
+
+        .muted {
+
+            color: #64748b;
+
+            margin-bottom: 30px;
+
+            font-size: 16px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD GRID
+        ===================================================== */
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(240px, 1fr)
+                );
+
+            gap: 20px;
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD CARD
+        ===================================================== */
+
+        .card {
+
+            display: block;
+
+            text-decoration: none;
+
+            color: #102a43;
+
+            background: #f8fafc;
+
+            border:
+                1px solid #dbe4ee;
+
+            border-radius: 14px;
+
+            padding: 22px;
+
+            min-height: 190px;
+
+            transition:
+                all 0.2s ease;
+
+        }
+
+
+        .card:hover {
+
+            transform:
+                translateY(-4px);
+
+            background: white;
+
+            box-shadow:
+                0 10px 25px
+                rgba(16, 42, 67, 0.12);
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD ICON
+        ===================================================== */
+
+        .dashboard-icon {
+
+            font-size: 38px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD TITLE
+        ===================================================== */
+
+        .dashboard-title {
+
+            font-size: 19px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+            color: #102a43;
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD DESCRIPTION
+        ===================================================== */
+
+        .dashboard-description {
+
+            font-size: 14px;
+
+            color: #64748b;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+           EMPTY MESSAGE
+        ===================================================== */
+
+        .empty-message {
+
+            text-align: center;
+
+            color: #64748b;
+
+            padding: 35px;
+
+            font-size: 16px;
+
+        }
+
+
+        /* =====================================================
+           MOBILE RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+
+            .bar {
+
+                padding: 15px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+
+            .wrap {
+
+                margin: 20px auto;
+
+                padding: 10px;
+
+            }
+
+
+            .box {
+
+                padding: 22px;
+
+            }
+
+
+            h1 {
+
+                font-size: 24px;
+
+            }
+
+
+            .grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOP HEADER
+===================================================== -->
+
+<div class="bar">
+
+
+    <!-- =================================================
+         APPLICATION NAME
+    ================================================= -->
+
+    <div class="brand-section">
+
+
+        <div class="brand">
+
+            SalesMaster KPI
+
+        </div>
+
+
+        <!-- =============================================
+             LOGGED-IN USER
+        ============================================== -->
+
+        {% if username %}
+
+
+        <div class="user">
+
+            Logged in as: {{ username }}
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =================================================
+         LOGOUT BUTTON
+    ================================================= -->
+
+    <button
+        type="button"
+        class="btn logout"
+        onclick="logout()">
+
+        Logout
+
+    </button>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<div class="wrap">
+
+
+    <div class="box">
+
+
+        <!-- =================================================
+             PAGE TITLE
+        ================================================= -->
+
+        <h1>
+
+            {{ dashboard_name or 'Main Dashboard' }}
+
+        </h1>
+
+
+        <!-- =================================================
+             SINGLE DASHBOARD PAGE
+        ================================================= -->
+
+        {% if dashboard_page %}
+
+
+            <p class="muted">
+
+                {{ dashboard_name or 'Dashboard' }}
+                is available for your user account.
+
+            </p>
+
+
+            <div class="empty-message">
+
+                Dashboard module is enabled.
+
+            </div>
+
+
+        {% else %}
+
+
+        <!-- =================================================
+             MAIN DASHBOARD MENU
+        ================================================= -->
+
+            <p class="muted">
+
+                Please select a dashboard from the available
+                modules below.
+
+            </p>
+
+
+
+            <!-- =============================================
+                 DASHBOARD GRID
+            ============================================== -->
+
+            {% if dashboards %}
+
+
+                <div class="grid">
+
+
+                    {% for dashboard in dashboards %}
+
+
+                    <a
+                        href="{{ dashboard.route }}"
+                        class="card">
+
+
+                        <!-- =================================
+                             DASHBOARD ICON
+                        ================================== -->
+
+                        <div class="dashboard-icon">
+
+
+                            {% if dashboard.dashboard_code
+                                  | upper == 'SALES' %}
+
+                                📊
+
+
+                            {% elif dashboard.dashboard_code
+                                    | upper
+                                    == 'SALES SUMMARY' %}
+
+                                📈
+
+
+                            {% elif dashboard.dashboard_code
+                                    | upper
+                                    == 'SALES_SUMMARY' %}
+
+                                📈
+
+
+                            {% elif dashboard.dashboard_code
+                                    | upper
+                                    == 'PRODUCTION' %}
+
+                                🏭
+
+
+                            {% elif dashboard.dashboard_code
+                                    | upper
+                                    == 'INVENTORY' %}
+
+                                📦
+
+
+                            {% elif dashboard.dashboard_code
+                                    | upper
+                                    == 'FINANCE' %}
+
+                                💰
+
+
+                            {% else %}
+
+                                📋
+
+
+                            {% endif %}
+
+
+                        </div>
+
+
+
+                        <!-- =================================
+                             DASHBOARD NAME
+                        ================================== -->
+
+                        <div class="dashboard-title">
+
+
+                            {% if dashboard.dashboard_name %}
+
+                                {{ dashboard.dashboard_name }}
+
+
+                            {% elif dashboard.name %}
+
+                                {{ dashboard.name }}
+
+
+                            {% else %}
+
+                                Dashboard
+
+
+                            {% endif %}
+
+
+                        </div>
+
+
+
+                        <!-- =================================
+                             DESCRIPTION
+                        ================================== -->
+
+                        <div class="dashboard-description">
+
+
+                            {% if dashboard.description %}
+
+                                {{ dashboard.description }}
+
+
+                            {% else %}
+
+                                Click here to open this dashboard.
+
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </a>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+
+            {% else %}
+
+
+                <!-- =========================================
+                     NO DASHBOARD ACCESS
+                ========================================== -->
+
+                <div class="empty-message">
+
+
+                    No dashboard module is currently assigned
+                    to your account.
+
+
+                    <br><br>
+
+
+                    Please contact the system administrator
+                    if you believe this is incorrect.
+
+
+                </div>
+
+
+            {% endif %}
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+    /* =====================================================
+       LOGOUT FUNCTION
+    ===================================================== */
+
+    async function logout() {
+
+
+        try {
+
+
+            /*
+             * Try API logout first.
+             */
+
+            const response = await fetch(
+
+                "/api/logout",
+
+                {
+
+                    method: "POST",
+
+                    credentials: "same-origin"
+
+                }
+
+            );
+
+
+            /*
+             * If API logout does not exist,
+             * browser will still redirect.
+             */
+
+        }
+
+
+        catch (error) {
+
+
+            console.log(
+
+                "Logout request completed with redirect."
+
+            );
+
+
+        }
+
+
+        /*
+         * Redirect to login/home page.
+         */
+
+        window.location.href = "/";
+
+
+    }
+
+
+</script>
+
+
+</body>
+
+
+</html>

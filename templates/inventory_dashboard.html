@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Inventory Dashboard</title>
+
+<style>
+
+/* ============================================================
+   GLOBAL
+============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #eef2f6;
+
+    color: #102a43;
+
+}
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+header {
+
+    background: #102a43;
+
+    color: white;
+
+    padding: 18px 25px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    flex-wrap: wrap;
+
+}
+
+header h1 {
+
+    margin: 0;
+
+    font-size: 24px;
+
+}
+
+header p {
+
+    margin: 5px 0 0 0;
+
+    color: #cbd5e1;
+
+}
+
+.header-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+}
+
+button {
+
+    border: 0;
+
+    border-radius: 7px;
+
+    padding: 10px 15px;
+
+    cursor: pointer;
+
+    font-weight: 700;
+
+}
+
+.main-btn {
+
+    background: #f2c94c;
+
+    color: #102a43;
+
+}
+
+.logout-btn {
+
+    background: white;
+
+    color: #102a43;
+
+}
+
+#status {
+
+    font-size: 13px;
+
+    color: #cbd5e1;
+
+}
+
+
+/* ============================================================
+   PAGE
+============================================================ */
+
+.page {
+
+    max-width: 1600px;
+
+    margin: auto;
+
+    padding: 25px;
+
+}
+
+
+/* ============================================================
+   FILTERS
+============================================================ */
+
+.filters {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    margin-bottom: 22px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(16,42,67,.08);
+
+}
+
+.filterrow {
+
+    display: flex;
+
+    gap: 15px;
+
+    align-items: end;
+
+    flex-wrap: wrap;
+
+}
+
+label {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+select {
+
+    min-width: 130px;
+
+    padding: 9px;
+
+    border:
+
+        1px solid #cbd5e1;
+
+    border-radius: 6px;
+
+}
+
+.run-btn {
+
+    background: #102a43;
+
+    color: white;
+
+}
+
+
+/* ============================================================
+   KPI CARDS
+============================================================ */
+
+.kpis {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(
+            auto-fit,
+            minmax(200px, 1fr)
+        );
+
+    gap: 18px;
+
+    margin-bottom: 20px;
+
+}
+
+.kpi {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    box-shadow:
+
+        0 5px 20px
+
+        rgba(16,42,67,.08);
+
+}
+
+.kpi small {
+
+    display: block;
+
+    color: #64748b;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+
+}
+
+.kpi strong {
+
+    font-size: 25px;
+
+    display: block;
+
+    color: #102a43;
+
+}
+
+.kpi em {
+
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 12px;
+
+    color: #64748b;
+
+    font-style: normal;
+
+}
+
+
+/* ============================================================
+   GRID
+============================================================ */
+
+.grid {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(
+            auto-fit,
+            minmax(450px, 1fr)
+        );
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+
+}
+
+
+/* ============================================================
+   CARD
+============================================================ */
+
+.card {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    overflow-x: auto;
+
+    box-shadow:
+
+        0 5px 20px
+
+        rgba(16,42,67,.08);
+
+}
+
+.card h2 {
+
+    margin-top: 0;
+
+    font-size: 18px;
+
+}
+
+
+/* ============================================================
+   TABLE
+============================================================ */
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+
+}
+
+th {
+
+    background: #102a43;
+
+    color: white;
+
+    padding: 10px;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+}
+
+td {
+
+    padding: 9px;
+
+    border-bottom:
+
+        1px solid #e2e8f0;
+
+}
+
+tbody tr:hover {
+
+    background: #f8fafc;
+
+}
+
+.number {
+
+    text-align: right;
+
+}
+
+
+/* ============================================================
+   FULL WIDTH
+============================================================ */
+
+.full {
+
+    margin-bottom: 20px;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media(max-width:700px) {
+
+    .page {
+
+        padding: 12px;
+
+    }
+
+    .grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+
+<header>
+
+    <div>
+
+        <h1>
+            Inventory Dashboard
+        </h1>
+
+        <p>
+            Inventory Transactions & Material Movement Analysis
+        </p>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <span id="loggedUser"></span>
+
+
+        <button
+            class="main-btn"
+            type="button"
+            onclick="goMainMenu()"
+        >
+
+            ← MAIN DASHBOARD
+
+        </button>
+
+
+        <button
+            class="logout-btn"
+            type="button"
+            onclick="logoutUser()"
+        >
+
+            LOGOUT
+
+        </button>
+
+
+        <span id="status">
+
+            Ready
+
+        </span>
+
+    </div>
+
+</header>
+
+
+
+<!-- ============================================================
+     PAGE
+============================================================ -->
+
+<div class="page">
+
+
+<!-- ============================================================
+     FILTERS
+============================================================ -->
+
+<section class="filters">
+
+    <b>
+        REPORT PARAMETERS
+    </b>
+
+
+    <div
+        class="filterrow"
+        style="margin-top:15px"
+    >
+
+
+        <label>
+
+            From Year
+
+            <select id="sy"></select>
+
+        </label>
+
+
+
+        <label>
+
+            From Month
+
+            <select id="sm"></select>
+
+        </label>
+
+
+
+        <label>
+
+            To Year
+
+            <select id="ey"></select>
+
+        </label>
+
+
+
+        <label>
+
+            To Month
+
+            <select id="em"></select>
+
+        </label>
+
+
+
+        <label>
+
+            Division
+
+            <select id="division"></select>
+
+        </label>
+
+
+
+        <label>
+
+            Top Items
+
+            <select id="top">
+
+                <option value="10">
+                    Top 10
+                </option>
+
+                <option value="20">
+                    Top 20
+                </option>
+
+                <option value="50">
+                    Top 50
+                </option>
+
+            </select>
+
+        </label>
+
+
+
+        <button
+            class="run-btn"
+            type="button"
+            onclick="loadDashboard()"
+        >
+
+            RUN REPORT
+
+        </button>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ============================================================
+     KPI ROW 1
+============================================================ -->
+
+<section class="kpis">
+
+
+    <div class="kpi">
+
+        <small>
+            01 • TOTAL TRANSACTIONS
+        </small>
+
+        <strong id="transactions">
+            0
+        </strong>
+
+        <em>
+            Inventory Transactions
+        </em>
+
+    </div>
+
+
+
+    <div class="kpi">
+
+        <small>
+            02 • RECEIPTS
+        </small>
+
+        <strong id="receipts">
+            0
+        </strong>
+
+        <em>
+            Total Receipt Quantity
+        </em>
+
+    </div>
+
+
+
+    <div class="kpi">
+
+        <small>
+            03 • ISSUES
+        </small>
+
+        <strong id="issues">
+            0
+        </strong>
+
+        <em>
+            Total Issue Quantity
+        </em>
+
+    </div>
+
+
+
+    <div class="kpi">
+
+        <small>
+            04 • NET MOVEMENT
+        </small>
+
+        <strong id="netMovement">
+            0
+        </strong>
+
+        <em>
+            Receipt − Issue
+        </em>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ============================================================
+     KPI ROW 2
+============================================================ -->
+
+<section class="kpis">
+
+
+    <div class="kpi">
+
+        <small>
+            05 • TRANSACTION VALUE
+        </small>
+
+        <strong id="transactionValue">
+            0
+        </strong>
+
+        <em>
+            Total Material Cost Movement
+        </em>
+
+    </div>
+
+
+
+    <div class="kpi">
+
+        <small>
+            06 • PRODUCTION CONSUMPTION
+        </small>
+
+        <strong id="productionConsumption">
+            0
+        </strong>
+
+        <em>
+            Production Issue Quantity
+        </em>
+
+    </div>
+
+
+
+    <div class="kpi">
+
+        <small>
+            07 • ACTIVE ITEMS
+        </small>
+
+        <strong id="activeItems">
+            0
+        </strong>
+
+        <em>
+            Distinct Transaction Items
+        </em>
+
+    </div>
+
+
+
+    <div class="kpi">
+
+        <small>
+            08 • PRODUCT CATEGORIES
+        </small>
+
+        <strong id="categories">
+            0
+        </strong>
+
+        <em>
+            Active Categories
+        </em>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ============================================================
+     TRANSACTION TYPE
+============================================================ -->
+
+<div class="card full">
+
+    <h2>
+        Inventory Movement by Order Type
+    </h2>
+
+    <table id="transactionTypeTable"></table>
+
+</div>
+
+
+
+<!-- ============================================================
+     TOP TABLES
+============================================================ -->
+
+<div class="grid">
+
+
+    <div class="card">
+
+        <h2>
+            Top Consumed Items
+        </h2>
+
+        <table id="topConsumedItems"></table>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <h2>
+            Top Consumed Materials – Production Issues
+        </h2>
+
+        <table id="topProductionMaterials"></table>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ============================================================
+     SECOND GRID
+============================================================ -->
+
+<div class="grid">
+
+
+    <div class="card">
+
+        <h2>
+            Inventory Movement by Product Category
+        </h2>
+
+        <table id="categoryTable"></table>
+
+    </div>
+
+
+
+    <div class="card">
+
+        <h2>
+            Inventory Movement by Division
+        </h2>
+
+        <table id="divisionTable"></table>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ============================================================
+     MONTHLY TREND
+============================================================ -->
+
+<div class="card full">
+
+    <h2>
+        Monthly Inventory Movement
+    </h2>
+
+    <table id="monthlyTable"></table>
+
+</div>
+
+
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+
+<script>
+
+
+/* ============================================================
+   NUMBER
+============================================================ */
+
+function numberValue(value) {
+
+    var n =
+        parseFloat(value);
+
+    return isNaN(n)
+        ? 0
+        : n;
+
+}
+
+
+/* ============================================================
+   FORMAT NUMBER
+============================================================ */
+
+function formatNumber(value) {
+
+    return numberValue(value)
+        .toLocaleString(
+            undefined,
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function esc(value) {
+
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    );
+
+}
+
+
+/* ============================================================
+   INITIALIZE YEARS / MONTHS
+============================================================ */
+
+function initializePeriods() {
+
+    var currentYear =
+        new Date()
+            .getFullYear();
+
+
+    var currentMonth =
+        new Date()
+            .getMonth() + 1;
+
+
+    var i;
+
+
+    for (
+        i = currentYear - 7;
+        i <= currentYear + 1;
+        i++
+    ) {
+
+        sy.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+
+        ey.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+    }
+
+
+    for (
+        i = 1;
+        i <= 12;
+        i++
+    ) {
+
+        sm.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+
+        em.add(
+            new Option(
+                i,
+                i
+            )
+        );
+
+    }
+
+
+    sy.value =
+        currentYear;
+
+    ey.value =
+        currentYear;
+
+    sm.value =
+        currentMonth;
+
+    em.value =
+        currentMonth;
+
+}
+
+
+/* ============================================================
+   SESSION
+============================================================ */
+
+function initializeApplication() {
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "GET",
+        "/api/session",
+        true
+    );
+
+
+    x.onreadystatechange =
+        function() {
+
+            if (
+                x.readyState !== 4
+            ) {
+                return;
+            }
+
+
+            if (
+                x.status === 200
+            ) {
+
+                var data;
+
+                try {
+
+                    data =
+                        JSON.parse(
+                            x.responseText
+                        );
+
+                }
+                catch (e) {
+
+                    window.location.href =
+                        "/";
+
+                    return;
+
+                }
+
+
+                if (
+                    !data.authenticated
+                ) {
+
+                    window.location.href =
+                        "/";
+
+                    return;
+
+                }
+
+
+                document.getElementById(
+                    "loggedUser"
+                ).innerHTML =
+                    "User: " +
+                    esc(data.username);
+
+
+                loadDivisions();
+
+            }
+            else {
+
+                window.location.href =
+                    "/";
+
+            }
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* ============================================================
+   LOAD DIVISIONS
+============================================================ */
+
+function loadDivisions() {
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "GET",
+        "/api/inventory-divisions",
+        true
+    );
+
+
+    x.onreadystatechange =
+        function() {
+
+            if (
+                x.readyState !== 4
+            ) {
+                return;
+            }
+
+
+            if (
+                x.status !== 200
+            ) {
+
+                alert(
+                    "Unable to load divisions."
+                );
+
+                return;
+
+            }
+
+
+            var data =
+                JSON.parse(
+                    x.responseText
+                );
+
+
+            var select =
+                document.getElementById(
+                    "division"
+                );
+
+
+            select.innerHTML =
+                "";
+
+
+            for (
+                var i = 0;
+                i < data.divisions.length;
+                i++
+            ) {
+
+                var divisionName =
+                    data.divisions[i];
+
+
+                select.add(
+                    new Option(
+                        divisionName === "ALL"
+                            ? "All Divisions"
+                            : divisionName,
+
+                        divisionName
+                    )
+                );
+
+            }
+
+
+            if (
+                data.default_division
+            ) {
+
+                select.value =
+                    data.default_division;
+
+            }
+
+
+            loadDashboard();
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* ============================================================
+   LOAD DASHBOARD
+============================================================ */
+
+function loadDashboard() {
+
+    document.getElementById(
+        "status"
+    ).innerHTML =
+        "Loading...";
+
+
+    var query =
+
+        "?start_year=" +
+        encodeURIComponent(sy.value)
+
+        +
+
+        "&start_month=" +
+        encodeURIComponent(sm.value)
+
+        +
+
+        "&end_year=" +
+        encodeURIComponent(ey.value)
+
+        +
+
+        "&end_month=" +
+        encodeURIComponent(em.value)
+
+        +
+
+        "&division=" +
+        encodeURIComponent(
+            division.value
+        )
+
+        +
+
+        "&top_n=" +
+        encodeURIComponent(
+            top.value
+        );
+
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "GET",
+        "/api/inventory-dashboard" +
+        query,
+        true
+    );
+
+
+    x.onreadystatechange =
+        function() {
+
+            if (
+                x.readyState !== 4
+            ) {
+                return;
+            }
+
+
+            if (
+                x.status === 200
+            ) {
+
+                var data =
+                    JSON.parse(
+                        x.responseText
+                    );
+
+
+                renderDashboard(
+                    data
+                );
+
+
+                document.getElementById(
+                    "status"
+                ).innerHTML =
+                    "Report loaded";
+
+            }
+            else {
+
+                var message =
+                    "Unable to load report.";
+
+
+                try {
+
+                    message =
+                        JSON.parse(
+                            x.responseText
+                        ).error;
+
+                }
+                catch (e) {
+                }
+
+
+                document.getElementById(
+                    "status"
+                ).innerHTML =
+                    "Error";
+
+
+                alert(
+                    message
+                );
+
+            }
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* ============================================================
+   RENDER DASHBOARD
+============================================================ */
+
+function renderDashboard(data) {
+
+
+    transactions.innerHTML =
+        formatNumber(
+            data.kpi.transactions
+        );
+
+
+    receipts.innerHTML =
+        formatNumber(
+            data.kpi.receipts
+        );
+
+
+    issues.innerHTML =
+        formatNumber(
+            data.kpi.issues
+        );
+
+
+    netMovement.innerHTML =
+        formatNumber(
+            data.kpi.net_movement
+        );
+
+
+    transactionValue.innerHTML =
+        formatNumber(
+            data.kpi.transaction_value
+        );
+
+
+    productionConsumption.innerHTML =
+        formatNumber(
+            data.kpi.production_consumption
+        );
+
+
+    activeItems.innerHTML =
+        formatNumber(
+            data.kpi.active_items
+        );
+
+
+    categories.innerHTML =
+        formatNumber(
+            data.kpi.categories
+        );
+
+
+    renderTable(
+
+        "transactionTypeTable",
+
+        data.transaction_types,
+
+        [
+            "Order Type",
+            "Transactions",
+            "Receipts",
+            "Issues",
+            "Net Movement",
+            "Transaction Value"
+        ],
+
+        [
+            "order_type",
+            "transactions",
+            "receipts",
+            "issues",
+            "net_movement",
+            "transaction_value"
+        ]
+
+    );
+
+
+    renderTable(
+
+        "topConsumedItems",
+
+        data.top_consumed_items,
+
+        [
+            "Item",
+            "Description",
+            "Issued Units",
+            "Issued KG",
+            "Consumption Cost"
+        ],
+
+        [
+            "item",
+            "description",
+            "issued_units",
+            "issued_kgs",
+            "consumption_cost"
+        ]
+
+    );
+
+
+ renderTable(
+
+    "topProductionMaterials",
+
+    data.top_production_materials,
+
+    [
+        "Item",
+        "Description",
+        "Issued Units",
+        "Issued KG",
+        "Consumption Cost"
+    ],
+
+    [
+        "item",
+        "description",
+        "issued_units",
+        "issued_kgs",
+        "consumption_cost"
+    ]
+
+);
+
+    renderTable(
+
+        "categoryTable",
+
+        data.categories,
+
+        [
+            "Product Category",
+            "Receipts",
+            "Issues",
+            "Net Movement",
+            "Value"
+        ],
+
+        [
+            "product_category",
+            "receipts",
+            "issues",
+            "net_movement",
+            "transaction_value"
+        ]
+
+    );
+
+
+    renderTable(
+
+        "divisionTable",
+
+        data.divisions,
+
+        [
+            "Division",
+            "Receipts",
+            "Issues",
+            "Net Movement",
+            "Value"
+        ],
+
+        [
+            "division",
+            "receipts",
+            "issues",
+            "net_movement",
+            "transaction_value"
+        ]
+
+    );
+
+
+    renderTable(
+
+        "monthlyTable",
+
+        data.monthly,
+
+        [
+            "Year",
+            "Month",
+            "Receipts",
+            "Issues",
+            "Net Movement",
+            "Transactions"
+        ],
+
+        [
+            "year",
+            "month",
+            "receipts",
+            "issues",
+            "net_movement",
+            "transactions"
+        ]
+
+    );
+
+}
+
+
+/* ============================================================
+   RENDER TABLE
+============================================================ */
+
+function renderTable(
+    tableId,
+    rows,
+    headers,
+    fields
+) {
+
+    var table =
+        document.getElementById(
+            tableId
+        );
+
+
+    if (
+        !table
+    ) {
+        return;
+    }
+
+
+    var html =
+        "<thead><tr>";
+
+
+    for (
+        var h = 0;
+        h < headers.length;
+        h++
+    ) {
+
+        html +=
+
+            "<th>" +
+
+            esc(
+                headers[h]
+            )
+
+            +
+
+            "</th>";
+
+    }
+
+
+    html +=
+        "</tr></thead><tbody>";
+
+
+    if (
+        !rows ||
+        rows.length === 0
+    ) {
+
+        html +=
+
+            "<tr>" +
+
+            "<td colspan='" +
+
+            headers.length +
+
+            "'>" +
+
+            "No data available" +
+
+            "</td>" +
+
+            "</tr>";
+
+    }
+    else {
+
+        for (
+            var i = 0;
+            i < rows.length;
+            i++
+        ) {
+
+            var row =
+                rows[i];
+
+
+            html +=
+                "<tr>";
+
+
+            for (
+                var j = 0;
+                j < fields.length;
+                j++
+            ) {
+
+                var field =
+                    fields[j];
+
+
+                var value =
+                    row[field];
+
+
+                if (
+                    typeof value === "number"
+                ) {
+
+                    html +=
+
+                        "<td class='number'>" +
+
+                        formatNumber(
+                            value
+                        )
+
+                        +
+
+                        "</td>";
+
+                }
+                else {
+
+                    html +=
+
+                        "<td>" +
+
+                        esc(
+                            value
+                        )
+
+                        +
+
+                        "</td>";
+
+                }
+
+            }
+
+
+            html +=
+                "</tr>";
+
+        }
+
+    }
+
+
+    html +=
+        "</tbody>";
+
+
+    table.innerHTML =
+        html;
+
+}
+
+
+/* ============================================================
+   MAIN MENU
+============================================================ */
+
+function goMainMenu() {
+
+    window.location.href =
+        "/main-menu";
+
+}
+
+
+/* ============================================================
+   LOGOUT
+============================================================ */
+
+function logoutUser() {
+
+    var x =
+        new XMLHttpRequest();
+
+
+    x.open(
+        "POST",
+        "/api/logout",
+        true
+    );
+
+
+    x.onreadystatechange =
+        function() {
+
+            if (
+                x.readyState !== 4
+            ) {
+                return;
+            }
+
+
+            window.location.href =
+                "/";
+
+        };
+
+
+    x.send();
+
+}
+
+
+/* ============================================================
+   START
+============================================================ */
+
+initializePeriods();
+
+window.onload =
+    initializeApplication;
+
+
+</script>
+
+
+</body>
+
+</html>
